@@ -15,11 +15,11 @@ const FileUploadComponent = () => {
   const handleFileChange = (e) => {
     setError('');
     const selectedFiles = Array.from(e.target.files);
-    
-    // if (selectedFiles.length !== 3) {
-    //   setError('Please upload exactly three video files.');
-    //   return;
-    // }
+
+    if (selectedFiles.length < 3) {
+      setError('You must upload more than one files');
+      return;
+    }
 
     setFiles(selectedFiles);
     setFileNames(selectedFiles.map(file => file.name));
@@ -27,7 +27,7 @@ const FileUploadComponent = () => {
 
   const handleUpload = async () => {
     if (files.length !== 3) {
-      setError('Please upload exactly three video files.');
+      setError('You must upload more than one files');
       return;
     }
 
@@ -57,7 +57,7 @@ const FileUploadComponent = () => {
     try {
       const response = await axios.get(`http://0.0.0.0:8000/jobs/${jobId}`);
       setStatus(response.data.status);
-      if (response.data.status === 'Completed') {
+      if (response.data.status === 'SUCCESS') {
         setDownloadUrl(response.data.download_url);
         if (statusIntervalRef.current) {
           clearInterval(statusIntervalRef.current);
@@ -82,7 +82,7 @@ const FileUploadComponent = () => {
         }
       };
     }
-  }, [jobId, checkStatus]);
+  }, [jobId]);
 
   const containerStyle = {
     display: 'flex',
@@ -96,14 +96,14 @@ const FileUploadComponent = () => {
 
   const buttonStyle = {
     margin: '10px',
-    backgroundColor:"#ADD8E6"
-
+    backgroundColor: "#ADD8E6",
   };
+
   const buttonStyle1 = {
     margin: '10px',
-    backgroundColor:"#008080"
+    backgroundColor: "#008080",
   };
-  
+
   return (
     <div style={containerStyle}>
       <h1>Video Combiner</h1>
@@ -136,7 +136,7 @@ const FileUploadComponent = () => {
       )}
       {jobId && <p>Job ID: {jobId}</p>}
       <p>Status: {status}</p>
-      {status === 'Completed' && downloadUrl && (
+      {status === 'SUCCESS' && downloadUrl && (
         <a href={downloadUrl} download>Download Combined Video</a>
       )}
     </div>
